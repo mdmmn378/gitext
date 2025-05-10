@@ -1,6 +1,10 @@
 use clap::Parser;
 use ignore::WalkBuilder;
-use std::{fs, io::Write, path::PathBuf};
+use std::{
+    fs,
+    io::Write,
+    path::{Path, PathBuf},
+};
 
 /// Converts a Git repo into an LLM-consumable text file
 #[derive(Parser, Debug)]
@@ -22,7 +26,7 @@ struct Args {
     no_gitignore: bool,
 }
 
-fn is_relevant_file(path: &PathBuf) -> bool {
+fn is_relevant_file(path: &Path) -> bool {
     let extensions = [
         "rs", "py", "go", "ts", "js", "java", "cpp", "c", "md", "txt", "toml", "json", "yaml",
         "yml",
@@ -47,10 +51,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     for result in builder.build() {
         let entry = result?;
         if entry.file_type().map(|ft| ft.is_file()).unwrap_or(false) {
-            let path = entry.path().to_path_buf();
-            if is_relevant_file(&path) {
+            let path = entry.path();
+            if is_relevant_file(path) {
                 writeln!(out, "\n=== File: {} ===\n", path.display())?;
-                let content = fs::read_to_string(&path).unwrap_or_default();
+                let content = fs::read_to_string(path).unwrap_or_default();
                 out.write_all(content.as_bytes())?;
             }
         }
