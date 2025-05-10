@@ -81,15 +81,21 @@ jobs:
           if-no-files-found: error
 
       - name: List artifacts
-        run: ls -la artifacts/
+        run: |
+          echo "Contents of artifacts directory:"
+          ls -la artifacts/
+          echo "Contents of artifacts subdirectories:"
+          find artifacts -type f
 
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            artifacts/*.tar.gz
-            artifacts/*.zip
+            artifacts/**/*.tar.gz
+            artifacts/**/*.zip
           generate_release_notes: true
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

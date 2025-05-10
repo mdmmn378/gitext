@@ -10,7 +10,7 @@ use std::{
 #[derive(Parser, Debug)]
 #[command(name = "gitext")]
 #[command(author = "Mamun")]
-#[command(version = "1.0")]
+#[command(version = env!("CARGO_PKG_VERSION"))]
 #[command(about = "Summarize git repo source + docs to a txt file")]
 struct Args {
     /// Path to Git repo
@@ -29,7 +29,7 @@ struct Args {
 fn is_relevant_file(path: &Path) -> bool {
     let extensions = [
         "rs", "py", "go", "ts", "js", "java", "cpp", "c", "md", "txt", "toml", "json", "yaml",
-        "yml",
+        "yml", "proto",
     ];
     path.extension()
         .and_then(|e| e.to_str())
