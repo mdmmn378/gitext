@@ -5,6 +5,9 @@ on:
     tags:
       - "v*"
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -66,6 +69,8 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -75,14 +80,16 @@ jobs:
           path: artifacts
           if-no-files-found: error
 
+      - name: List artifacts
+        run: ls -la artifacts/
+
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            artifacts/gitext-linux-x86_64.tar.gz
-            artifacts/gitext-macos-x86_64.tar.gz
-            artifacts/gitext-windows-x86_64.exe.zip
+            artifacts/*.tar.gz
+            artifacts/*.zip
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
